@@ -96,7 +96,7 @@ func ReadFile(filename string) (int, error) {
 		fmt.Println("error")
 		return -1, err
 	}
-
+	fmt.Println(string(content))
 	return strconv.Atoi(string(content))
 }
 
