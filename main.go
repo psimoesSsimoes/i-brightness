@@ -12,6 +12,13 @@ import (
 
 var brightness = "/sys/class/backlight/intel_backlight/brightness"
 var maxbrightness = "/sys/class/backlight/intel_backlight/max_brightness"
+var (
+	err        error
+	percentage int
+	max        int
+	value      int
+	br         int
+)
 
 //IsRoot checks if user is running command as root
 func IsRoot() bool {
@@ -24,8 +31,31 @@ func Inc(c *cli.Context) error {
 		fmt.Println("Got root?")
 		return fmt.Errorf("this tool needs root access")
 	}
-	fmt.Println("increase")
-	return nil
+	max, err = ReadFile(maxbrightness)
+
+	if err != nil {
+		return err
+	}
+
+	br, err = ReadFile(brightness)
+
+	if err != nil {
+		return err
+	}
+	switch {
+
+	case br == max-500:
+		break
+
+	case br+50 > max-500:
+		br = max - 500
+		break
+
+	default:
+		br += 50
+	}
+	fmt.Println(br)
+	return WriteFile(br)
 }
 
 //Dec function opens brightness file, reads, and decrements by 50, if possible
@@ -34,19 +64,32 @@ func Dec(c *cli.Context) error {
 		fmt.Println("Got root?")
 		return fmt.Errorf("this tool needs root access")
 	}
-	fmt.Println("decrease")
-	return nil
+
+	br, err = ReadFile(brightness)
+
+	if err != nil {
+		return err
+	}
+	switch {
+
+	case br == 80:
+		break
+
+	case br-50 < 80:
+		br = 80
+		break
+
+	default:
+		br -= 50
+	}
+
+	fmt.Println(br)
+	return WriteFile(br)
 }
 
 //Set write to brightness file a value corresponding to the percentage given by the user
 func Set(c *cli.Context) error {
 
-	var (
-		err        error
-		percentage int
-		max        int
-		value      int
-	)
 	if !IsRoot() {
 		fmt.Println("Got root?")
 		return fmt.Errorf("this tool needs root access")
@@ -83,7 +126,6 @@ func Set(c *cli.Context) error {
 
 			}
 			value = ((max - 500) * percentage) / 100
-			fmt.Println(value)
 		}
 	}
 
@@ -97,15 +139,14 @@ func ReadFile(filename string) (int, error) {
 		fmt.Println("error")
 		return -1, err
 	}
-	fmt.Println(string(content[:]))
 	return strconv.Atoi(strings.TrimSpace(string(content[:])))
 }
 
 //WriteFile writes an integer to brightness file
 func WriteFile(n int) error {
-
+	err := ioutil.WriteFile(brightness, []byte(string(n)), 0444)
+	fmt.Println(err)
 	return nil
-
 }
 
 func main() {
