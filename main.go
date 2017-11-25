@@ -39,24 +39,7 @@ func main() {
   app.Name = "mac_air_brightness"
   app.Usage = "change screen brightness of your mac book air!"
 
-    cli.AppHelpTemplate = `NAME:
-   {{.Name}} - {{.Usage}}
-USAGE:
-   {{.HelpName}} command [arguments...]{{end}}
-   {{if len .Authors}}
-VERSION:
-   {{.Version}}
-   {{end}}
-COMMANDS:
-{{range .Commands}}{{if not .HideHelp}}   {{join .Names ", "}}{{ "\t"}}{{.Usage}}{{ "\n" }}{{end}}{{end}}{{end}}{{if .VisibleFlags}}
-GLOBAL OPTIONS:
-   {{range .VisibleFlags}}{{.}}
-   {{end}}{{end}}{{if .Copyright }}
-AUTHOR:
-   {{range .Authors}}{{ . }}{{end}}
-   {{end}}{{if .Commands}}
 
-`
    
  app.Commands = []cli.Command{
     {
@@ -85,6 +68,6 @@ AUTHOR:
     },
   }
   app.Version="0.0.1"
-  app.Author="Seomis ==> psimoes@campus.fct.unl.pt"
+  app.Author="Seomis : psimoes@campus.fct.unl.pt"
   app.Run(os.Args)
 }
