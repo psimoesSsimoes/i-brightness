@@ -93,6 +93,7 @@ func Set(c *cli.Context) error {
 func ReadFile(filename string) (int, error) {
 	content, err := ioutil.ReadFile(filename)
 	if err != nil {
+		fmt.Println("error")
 		return -1, err
 	}
 
