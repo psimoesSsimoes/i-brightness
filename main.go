@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/urfave/cli"
 )
@@ -81,7 +82,7 @@ func Set(c *cli.Context) error {
 				return fmt.Errorf("failed to find max brightness")
 
 			}
-			value = ((max - 100) * percentage) / 100
+			value = ((max - 500) * percentage) / 100
 			fmt.Println(value)
 		}
 	}
@@ -96,8 +97,8 @@ func ReadFile(filename string) (int, error) {
 		fmt.Println("error")
 		return -1, err
 	}
-	fmt.Println(string(content))
-	return strconv.Atoi(string(content))
+	fmt.Println(string(content[:]))
+	return strconv.Atoi(strings.TrimSpace(string(content[:])))
 }
 
 //WriteFile writes an integer to brightness file

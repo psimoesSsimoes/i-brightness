@@ -20,6 +20,7 @@ This model uses an Intel graphics card and you can manually adjust the brightnes
 
 	down : decrease brightness by 10
 	
+by precaution up ,down and set always stay in values far from maximum and minimum allowed by Intel
 
 ## Bind it to a key
 
