@@ -46,6 +46,10 @@ func Set(c *cli.Context) error {
 		max        int
 		value      int
 	)
+	if !IsRoot() {
+		fmt.Println("Got root?")
+		return fmt.Errorf("this tool needs root access")
+	}
 
 	if c.NArg() > 0 {
 
