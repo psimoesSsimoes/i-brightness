@@ -21,6 +21,20 @@ This model uses an Intel graphics card and you can manually adjust the brightnes
 	down : decrease brightness by 10
 	
 
+## Bind it to a key
+
+i always use tilted WM like awesome or i3. For those, use [xev](https://en.wikipedia.org/wiki/Xev)to discover the id's of the keys you want to map.
+
+Having that, bind the keys with the generated binary.
+
+i3 example:
+
+	bindsym <key_id> exec "sudo ~/go/bin/./mbair-bright up"
+	bindsym <key_id> exec "sudo ~/go/bin/./mbair-bright down"
+
+
+if your configuration doesn't execute sudo without asking the password, then you can use [capabilities](http://man7.org/linux/man-pages/man7/capabilities.7.html) to give permissions to mbair-bright binary.
+
 ## Author
 
 Pedro Simões (aka seomis)
