@@ -11,14 +11,14 @@ func IsRoot() bool{
 	return os.Geteuid()==0
 }
 
-func Increase(c *cli.Context)error {
+func Inc(c *cli.Context)error {
 	if !IsRoot(){
 		return fmt.Errorf("this tool needs root access")
 	}
 	fmt.Println("increase")
 	return nil
 }
-func Decrease(c *cli.Context)error {
+func Dec(c *cli.Context)error {
 	if !IsRoot(){
 		return fmt.Errorf("this tool needs root access")
 	}
@@ -58,9 +58,7 @@ func main() {
       Name:    "dec",
       Aliases: []string{"d"},
       Usage:   "decrease brightness",
-      Action:  func(c *cli.Context) error {
-        return nil
-      },
+      Action:  Dec,
     },
   }
   app.Version="0.0.1"
