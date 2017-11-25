@@ -46,17 +46,13 @@ func main() {
       Name:    "set",
       Aliases: []string{"s"},
       Usage:   "set brightness manually",
-      Action:  func(c *cli.Context) error {
-        return nil
-      },
+      Action:  Set,
     },
     {
       Name:    "inc",
       Aliases: []string{"i"},
       Usage:   "increase brightness",
-      Action:  func(c *cli.Context) error {
-        return nil
-      },
+      Action:  Inc,
   },
 	 {
       Name:    "dec",
