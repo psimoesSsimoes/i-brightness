@@ -157,7 +157,7 @@ func WriteFile(number int) error {
 func main() {
 
 	app := cli.NewApp()
-	app.Name = "backlight brightness"
+	app.Name = "i-brightness"
 	app.Usage = "change screen brightness!"
 
 	app.Commands = []cli.Command{
