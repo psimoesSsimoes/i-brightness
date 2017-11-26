@@ -17,9 +17,9 @@ This model uses an Intel graphics card and you can manually adjust the brightnes
 
 	set : set brigthness manually. Accepted values between 90 and 1280
 
-	up : increase brigthness by 10
+	up : increase brigthness by 1
 
-	down : decrease brightness by 10
+	down : decrease brightness by 1
 	
 by precaution up ,down and set always stay in values far from maximum and minimum allowed by Intel
 

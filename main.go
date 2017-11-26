@@ -19,7 +19,6 @@ var (
 	max        int
 	value      int
 	br         int
-	buf        []byte
 )
 
 //IsRoot checks if user is running command as root
@@ -48,11 +47,6 @@ func AdjustBrightness(origin, modification int) int {
 
 //Inc function opens brightness file, reads, and increments by 50, if possible
 func Inc(c *cli.Context) error {
-	// if !IsRoot() {
-	// 	fmt.Println("Got root?")
-	// 	return fmt.Errorf("this tool needs root access")
-	// }
-
 	br, err = ReadFile(brightness)
 
 	if err != nil {
@@ -64,11 +58,6 @@ func Inc(c *cli.Context) error {
 
 //Dec function opens brightness file, reads, and decrements by 50, if possible
 func Dec(c *cli.Context) error {
-	if !IsRoot() {
-		fmt.Println("Got root?")
-		return fmt.Errorf("this tool needs root access")
-	}
-
 	br, err = ReadFile(brightness)
 
 	if err != nil {
@@ -79,11 +68,6 @@ func Dec(c *cli.Context) error {
 
 //Set write to brightness file a value corresponding to the percentage given by the user
 func Set(c *cli.Context) error {
-
-	if !IsRoot() {
-		fmt.Println("Got root?")
-		return fmt.Errorf("this tool needs root access")
-	}
 
 	if c.NArg() > 0 {
 
@@ -118,8 +102,7 @@ func Set(c *cli.Context) error {
 			value = ((max - 1) * percentage) / 100
 		}
 	}
-	fmt.Println(value)
-	return WriteFile(3)
+	return WriteFile(value)
 }
 
 //ReadFile reads a file containing only integers
@@ -140,7 +123,6 @@ func WriteFile(number int) error {
 		return err
 	}
 	n, err := f.Write([]byte(strconv.Itoa(number)))
-	fmt.Println(err)
 	if err == nil && n < len(([]byte(string(number)))) {
 		err = io.ErrShortWrite
 	}
@@ -152,6 +134,11 @@ func WriteFile(number int) error {
 }
 
 func main() {
+
+	if !IsRoot() {
+		fmt.Println("Got root?")
+		os.Exit(1)
+	}
 
 	app := cli.NewApp()
 	app.Name = "i-brightness"
