@@ -11,14 +11,15 @@ import (
 	"github.com/urfave/cli"
 )
 
-var brightness = "/sys/class/backlight/intel_backlight/brightness"
-var maxbrightness = "/sys/class/backlight/intel_backlight/max_brightness"
+var brightness = "/sys/class/backlight/acpi_video0/brightness"
+var maxbrightness = "/sys/class/backlight/acpi_video0/max_brightness"
 var (
 	err        error
 	percentage int
 	max        int
 	value      int
 	br         int
+	buf        []byte
 )
 
 //IsRoot checks if user is running command as root
@@ -30,13 +31,13 @@ func IsRoot() bool {
 func AdjustBrightness(origin, modification int) int {
 	switch {
 
-	case origin+modification < 40:
+	case origin+modification < 1:
 
-		return 40
+		return 1
 
-	case origin+modification > 1400:
+	case origin+modification > 15:
 
-		return 1400
+		return 15
 
 	default:
 
@@ -47,14 +48,10 @@ func AdjustBrightness(origin, modification int) int {
 
 //Inc function opens brightness file, reads, and increments by 50, if possible
 func Inc(c *cli.Context) error {
-	if !IsRoot() {
-		fmt.Println("Got root?")
-		return fmt.Errorf("this tool needs root access")
-	}
-
-	if err != nil {
-		return err
-	}
+	// if !IsRoot() {
+	// 	fmt.Println("Got root?")
+	// 	return fmt.Errorf("this tool needs root access")
+	// }
 
 	br, err = ReadFile(brightness)
 
@@ -62,7 +59,7 @@ func Inc(c *cli.Context) error {
 		return err
 	}
 
-	return WriteFile(AdjustBrightness(br, 50))
+	return WriteFile(AdjustBrightness(br, 1))
 }
 
 //Dec function opens brightness file, reads, and decrements by 50, if possible
@@ -77,7 +74,7 @@ func Dec(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	return WriteFile(AdjustBrightness(br, -50))
+	return WriteFile(AdjustBrightness(br, -1))
 }
 
 //Set write to brightness file a value corresponding to the percentage given by the user
@@ -103,7 +100,7 @@ func Set(c *cli.Context) error {
 
 		switch {
 
-		case percentage < 20 || percentage > 100:
+		case percentage < 10 || percentage > 100:
 
 			fmt.Println("Percentage has to be between 20 and 100")
 
@@ -118,11 +115,11 @@ func Set(c *cli.Context) error {
 				return fmt.Errorf("failed to find max brightness")
 
 			}
-			value = ((max - 500) * percentage) / 100
+			value = ((max - 1) * percentage) / 100
 		}
 	}
-
-	return WriteFile(value)
+	fmt.Println(value)
+	return WriteFile(3)
 }
 
 //ReadFile reads a file containing only integers
@@ -132,18 +129,18 @@ func ReadFile(filename string) (int, error) {
 		fmt.Println("error")
 		return -1, err
 	}
-	return strconv.Atoi(strings.TrimSpace(string(content[:])))
+	return strconv.Atoi(strings.TrimSpace(string(content)))
 }
 
 //WriteFile writes an integer to brightness file
 func WriteFile(number int) error {
-	fmt.Println(number)
-	f, err := os.OpenFile(brightness, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0444)
+	f, err := os.OpenFile(brightness, os.O_WRONLY|os.O_TRUNC, 0444)
 
 	if err != nil {
 		return err
 	}
-	n, err := f.Write([]byte(string(number)))
+	n, err := f.Write([]byte(strconv.Itoa(number)))
+	fmt.Println(err)
 	if err == nil && n < len(([]byte(string(number)))) {
 		err = io.ErrShortWrite
 	}
