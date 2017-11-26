@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 	"strconv"
@@ -25,13 +26,31 @@ func IsRoot() bool {
 	return os.Geteuid() == 0
 }
 
+//AdjustBrightness limited to values between 40 and 1400
+func AdjustBrightness(origin, modification int) int {
+	switch {
+
+	case origin+modification < 40:
+
+		return 40
+
+	case origin+modification > 1400:
+
+		return 1400
+
+	default:
+
+		return origin + modification
+	}
+
+}
+
 //Inc function opens brightness file, reads, and increments by 50, if possible
 func Inc(c *cli.Context) error {
 	if !IsRoot() {
 		fmt.Println("Got root?")
 		return fmt.Errorf("this tool needs root access")
 	}
-	max, err = ReadFile(maxbrightness)
 
 	if err != nil {
 		return err
@@ -42,20 +61,8 @@ func Inc(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	switch {
 
-	case br == max-500:
-		break
-
-	case br+50 > max-500:
-		br = max - 500
-		break
-
-	default:
-		br += 50
-	}
-	fmt.Println(br)
-	return WriteFile(br)
+	return WriteFile(AdjustBrightness(br, 50))
 }
 
 //Dec function opens brightness file, reads, and decrements by 50, if possible
@@ -70,21 +77,7 @@ func Dec(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	switch {
-
-	case br == 80:
-		break
-
-	case br-50 < 80:
-		br = 80
-		break
-
-	default:
-		br -= 50
-	}
-
-	fmt.Println(br)
-	return WriteFile(br)
+	return WriteFile(AdjustBrightness(br, -50))
 }
 
 //Set write to brightness file a value corresponding to the percentage given by the user
@@ -143,17 +136,29 @@ func ReadFile(filename string) (int, error) {
 }
 
 //WriteFile writes an integer to brightness file
-func WriteFile(n int) error {
-	err := ioutil.WriteFile(brightness, []byte(string(n)), 0444)
-	fmt.Println(err)
-	return nil
+func WriteFile(number int) error {
+	fmt.Println(number)
+	f, err := os.OpenFile(brightness, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0444)
+
+	if err != nil {
+		return err
+	}
+	n, err := f.Write([]byte(string(number)))
+	if err == nil && n < len(([]byte(string(number)))) {
+		err = io.ErrShortWrite
+	}
+	if err1 := f.Close(); err == nil {
+		err = err1
+	}
+	return err
+
 }
 
 func main() {
 
 	app := cli.NewApp()
-	app.Name = "mac_air_brightness"
-	app.Usage = "change screen brightness of your mac book air!"
+	app.Name = "backlight brightness"
+	app.Usage = "change screen brightness!"
 
 	app.Commands = []cli.Command{
 		{
